@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("Book/")
+@RequestMapping("/Book")
 public class BookController {
 
     @Autowired
@@ -27,7 +27,7 @@ public class BookController {
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<Book> addBook(Book book){
+    public ResponseEntity<Book> addBook(@RequestBody Book book){
         return new ResponseEntity<>(bookService.addBook(book), HttpStatus.CREATED);
     }
 
