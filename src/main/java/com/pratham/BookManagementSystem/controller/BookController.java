@@ -41,5 +41,13 @@ public class BookController {
         return new ResponseEntity<>("Book Deleted Successfully", HttpStatus.OK);
     }
 
+    public ResponseEntity<List<Book>> getAllBookdetails(){
+        return new ResponseEntity<>(bookService.getAllBookdetails(), HttpStatus.OK);
+    }
+
+    public ResponseEntity<Book> UserGetBookById(int bookId){
+        return new ResponseEntity<>(bookService.UserGetBookById(bookId), HttpStatus.OK);
+    }
+
 
 }
