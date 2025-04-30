@@ -51,6 +51,16 @@ public class BookService {
         bookRepository.delete(bookExists);
     }
 
+    public List<Book> getAllBookdetails(){
+        return bookRepository.findAll();
+    }
+
+    public Book UserGetBookById(int bookId){
+        return bookRepository.findById(bookId).orElseThrow(()->new BookNotFoundException(bookId));
+    }
+
+
+
 
 
 
