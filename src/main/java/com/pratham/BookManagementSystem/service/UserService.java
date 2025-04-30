@@ -28,10 +28,6 @@ public class UserService {
 
     @PreAuthorize("hasRole('ADMIN')")
     public User AdminAddUser(User user){
-        Optional<User> userExists = userRepository.findByUsername(user.getUsername());
-        if(userExists.isPresent()){
-            throw new UsernameNotFoundException("userName",user.getUsername());
-        }
         return userRepository.save(user);
     }
 

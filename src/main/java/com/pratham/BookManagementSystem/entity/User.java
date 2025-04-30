@@ -12,9 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.*;
 import java.util.Collection;
 import java.util.List;
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class User implements UserDetails {
 

@@ -48,6 +48,8 @@ public class UserController {
         return new ResponseEntity<>("User Deleted Successfully", HttpStatus.OK);
     }
 
+    // from here User can register himself , get his details by name and Id &  update his details
+
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user){
         return new ResponseEntity<>(userService.registerUser(user), HttpStatus.CREATED);
