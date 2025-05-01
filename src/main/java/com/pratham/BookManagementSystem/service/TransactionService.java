@@ -90,7 +90,7 @@ public class TransactionService {
         }
 
         Transaction borrowTransaction = transactionRepository
-                .findByUserIdAndBookIdAndStatus(userId, bookId, Status.BORROWED)
+                .findByUserIdAndBook_BookIdAndStatus(userId, bookId, Status.BORROWED)
                 .orElseThrow(() -> new RuntimeException("No active borrowed transaction found for this user and book."));
 
         LocalDate today = LocalDate.now();

@@ -13,11 +13,11 @@ public class Transaction {
     private long transactionId;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "bookId")
+    @JoinColumn(name = "book_id", nullable = false)
     private Book book;
     private LocalDate borrowDate;
     private LocalTime borrowTime;

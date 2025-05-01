@@ -17,35 +17,38 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping("/getAllBooks")
-    public ResponseEntity<List<Book>> getAllBooks(){
+    public ResponseEntity<List<Book>> getAllBooks() {
         return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
     }
 
-    @GetMapping("/getBookById")
-    public ResponseEntity<Book> getBookById(int bookId){
+    @GetMapping("/getBookById/{bookId}")
+    public ResponseEntity<Book> getBookById(@PathVariable int bookId) {
         return new ResponseEntity<>(bookService.getBookById(bookId), HttpStatus.OK);
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<Book> addBook(@RequestBody Book book){
+    public ResponseEntity<Book> addBook(@RequestBody Book book) {
         return new ResponseEntity<>(bookService.addBook(book), HttpStatus.CREATED);
     }
 
-    @PutMapping("/updaetBook")
-    public ResponseEntity<Book> updateBook(int bookId, Book book){
+    @PutMapping("/updateBook/{bookId}")
+    public ResponseEntity<Book> updateBook(@PathVariable int bookId,@RequestBody Book book) {
         return new ResponseEntity<>(bookService.updateBook(bookId, book), HttpStatus.OK);
     }
-    @DeleteMapping("/deleteBook")
-    public ResponseEntity<String> deleteBook(int bookId){
+
+    @DeleteMapping("/deleteBook/{bookId}")
+    public ResponseEntity<String> deleteBook(@PathVariable int bookId) {
         bookService.deleteBook(bookId);
         return new ResponseEntity<>("Book Deleted Successfully", HttpStatus.OK);
     }
 
-    public ResponseEntity<List<Book>> getAllBookdetails(){
+    @GetMapping("/user/getAllBookDetails")
+    public ResponseEntity<List<Book>> getAllBookDetails() {
         return new ResponseEntity<>(bookService.getAllBookdetails(), HttpStatus.OK);
     }
 
-    public ResponseEntity<Book> UserGetBookById(int bookId){
+    @GetMapping("/user/getBookById/{bookId}")
+    public ResponseEntity<Book> UserGetBookById(@PathVariable  int bookId) {
         return new ResponseEntity<>(bookService.UserGetBookById(bookId), HttpStatus.OK);
     }
 
