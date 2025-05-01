@@ -20,7 +20,7 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.getAllTransactions());
     }
 
-    @GetMapping("/getTransactionById/{transactionId")
+    @GetMapping("/getTransactionById/{transactionId}")
     public ResponseEntity<Transaction> getTransactionById(@PathVariable  long transactionId) {
         return ResponseEntity.ok(transactionService.getTransactionById(transactionId));
     }
