@@ -1,5 +1,6 @@
 package com.pratham.BookManagementSystem.controller;
 
+import com.pratham.BookManagementSystem.entity.Book;
 import com.pratham.BookManagementSystem.entity.User;
 import com.pratham.BookManagementSystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,11 @@ public class UserController {
     @PutMapping("/updateUser/{userId}")
     public ResponseEntity<User> updateUser(@PathVariable int userId,@RequestBody User user){
         return new ResponseEntity<>(userService.updateUserById(userId, user), HttpStatus.OK);
+    }
+
+    @GetMapping("/getallbooks")
+    public ResponseEntity<List<Book>> getAllBooks(){
+        return new ResponseEntity<>(userService.getAllBooks(), HttpStatus.OK);
     }
 
 

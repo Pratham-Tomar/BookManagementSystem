@@ -1,5 +1,6 @@
 package com.pratham.BookManagementSystem.service;
 
+import com.pratham.BookManagementSystem.entity.Book;
 import com.pratham.BookManagementSystem.entity.User;
 import com.pratham.BookManagementSystem.exception.UsernameNotFoundException;
 import com.pratham.BookManagementSystem.repository.UserRepository;
@@ -16,6 +17,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BookService bookService;
 
     @PreAuthorize("hasRole('ADMIN')")
     public List<User> AdmingetAllUsers(){
@@ -74,6 +78,10 @@ public class UserService {
         userExists.setMobileNumber(user.getMobileNumber());
         userExists.setRegistrationNumber(user.getRegistrationNumber());
         return userRepository.save(userExists);
+    }
+
+    public List<Book> getAllBooks() {
+        return bookService.getAllBookdetails();
     }
 
 }
