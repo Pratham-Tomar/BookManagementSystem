@@ -7,10 +7,6 @@ import org.hibernate.mapping.Column;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 public class Transaction {
     @Id
@@ -32,7 +28,7 @@ public class Transaction {
     private double fineAmount;
     private String remarks;
 
-    Transaction(){}
+    public Transaction(){}
 
     public Transaction(long transactionId, LocalDate borrowDate, LocalTime borrowTime, LocalDate returnDate, LocalTime returnTime, Status status, double fineAmount, String remarks) {
         this.transactionId = transactionId;

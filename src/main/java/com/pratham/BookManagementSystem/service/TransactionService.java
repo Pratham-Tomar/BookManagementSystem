@@ -72,11 +72,51 @@ public class TransactionService {
         transaction.setReturnTime(null);  // Set to null initially
 
 
-
         transaction.setRemarks(remarks);
 
         return transactionRepository.save(transaction);
     }
+
+    public Transaction returnBook(int userId ,int bookId , String remarks){
+
+        User user= userService.getUserById(userId);
+        if(user==null){
+            throw new RuntimeException("User not found with id: " + userId);
+        }
+
+        Book book = bookService.getBookById(bookId);
+        if(book==null){
+            throw new RuntimeException("Book not found with id: " + bookId);
+        }
+
+        Transaction borrowTransaction = transactionRepository
+                .findByUserIdAndBookIdAndStatus(userId, bookId, Status.BORROWED)
+                .orElseThrow(() -> new RuntimeException("No active borrowed transaction found for this user and book."));
+
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        double fine=0.0;
+        if(today.isAfter(borrowTransaction.getReturnDate())){
+            long overdueDays = borrowTransaction.getReturnDate().until(today).getDays(); // or ChronoUnit.DAYS.between(...)
+            fine = overdueDays * 10.0;  // ₹10 per day
+            borrowTransaction.setRemarks(remarks + " | Fine: ₹" + fine);
+        }
+        else{
+            borrowTransaction.setRemarks(remarks);
+        }
+        borrowTransaction.setStatus(Status.RETURNED);
+        borrowTransaction.setReturnDate(today);
+        borrowTransaction.setReturnTime(now);
+        borrowTransaction.setFineAmount(fine);
+
+        // Update book stock
+        book.setAvailableCopies(book.getAvailableCopies() + 1);
+        bookService.updateBook(bookId, book);
+
+        return transactionRepository.save(borrowTransaction);
+    }
+
+
 
 
 
