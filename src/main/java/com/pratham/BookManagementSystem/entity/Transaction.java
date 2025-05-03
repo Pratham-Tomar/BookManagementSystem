@@ -10,6 +10,7 @@ import java.time.LocalTime;
 @Entity
 public class Transaction {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long transactionId;
 
     @ManyToOne
