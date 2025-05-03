@@ -1,8 +1,12 @@
 package com.pratham.BookManagementSystem.service;
 
+import com.pratham.BookManagementSystem.dtos.BookDto;
+import com.pratham.BookManagementSystem.dtos.UserDto;
 import com.pratham.BookManagementSystem.entity.Book;
 import com.pratham.BookManagementSystem.entity.User;
 import com.pratham.BookManagementSystem.exception.UsernameNotFoundException;
+import com.pratham.BookManagementSystem.mapper.BookMapper;
+import com.pratham.BookManagementSystem.mapper.UserMapper;
 import com.pratham.BookManagementSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -22,28 +27,35 @@ public class UserService {
     private BookService bookService;
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<User> AdmingetAllUsers(){
-        return userRepository.findAll();
+    public List<UserDto> AdmingetAllUsers(){
+        List<User> users= userRepository.findAll();
+        return users.stream().map(UserMapper::toDto).collect(Collectors.toList());
+
     }
     @PreAuthorize("hasRole('ADMIN')")
-    public User AdmingetUserById(int userId){
-        return userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("userId: ", userId));
+    public UserDto AdmingetUserById(int userId){
+        User user= userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("userId: ", userId));
+        return UserMapper.toDto(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public User AdminAddUser(User user){
-        return userRepository.save(user);
+    public UserDto AdminAddUser(UserDto userDto){
+        User user=UserMapper.toEntity(userDto);
+         User savedUser=userRepository.save(user);
+         return UserMapper.toDto(savedUser);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public User AdminUpdateUserById(int userId , User user){
+    public UserDto AdminUpdateUserById(int userId , UserDto userDto){
+        User user=UserMapper.toEntity(userDto);
         User userExists = userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("userId",userId));
 
         userExists.setUsername(user.getUsername());
         userExists.setAddress(user.getAddress());
         userExists.setMobileNumber(user.getMobileNumber());
         userExists.setRegistrationNumber(user.getRegistrationNumber());
-        return userRepository.save(userExists);
+        User savedUser= userRepository.save(userExists);
+        return UserMapper.toDto(savedUser);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -58,30 +70,38 @@ public class UserService {
         userRepository.delete(userExist);
     }
 
-    public User registerUser(User user){
-        return userRepository.save(user);
+    public UserDto registerUser(UserDto userDto){
+        User user =UserMapper.toEntity(userDto);
+        User savedUser= userRepository.save(user);
+        return UserMapper.toDto(savedUser);
     }
 
-    public User getUserByName(String username){
-        return userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("username: ", username));
+    public UserDto getUserByName(String username){
+         User user=userRepository.findByUsername(username).orElseThrow(()-> new UsernameNotFoundException("username: ", username));
+         return UserMapper.toDto(user);
     }
 
-    public User getUserById(int userId){
-        return userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("userId: ", userId));
+    public UserDto getUserById(int userId){
+        User user= userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("userId: ", userId));
+        return UserMapper.toDto(user);
     }
 
-    public User updateUserById(int userId , User user){
+    public UserDto updateUserById(int userId , UserDto userDto){
+        User user=UserMapper.toEntity(userDto);
         User userExists = userRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("userId",userId));
 
         userExists.setUsername(user.getUsername());
         userExists.setAddress(user.getAddress());
         userExists.setMobileNumber(user.getMobileNumber());
         userExists.setRegistrationNumber(user.getRegistrationNumber());
-        return userRepository.save(userExists);
+        User savedUser= userRepository.save(userExists);
+        return UserMapper.toDto(savedUser);
     }
 
-    public List<Book> getAllBooks() {
-        return bookService.getAllBookdetails();
+    public List<BookDto> getAllBooks() {
+         List<BookDto> booksDto=  bookService.getAllBookdetails();
+         return booksDto;
+
     }
 
 }

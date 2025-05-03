@@ -1,9 +1,15 @@
 package com.pratham.BookManagementSystem.service;
 
+import com.pratham.BookManagementSystem.dtos.BookDto;
+import com.pratham.BookManagementSystem.dtos.TransactionDto;
+import com.pratham.BookManagementSystem.dtos.UserDto;
 import com.pratham.BookManagementSystem.entity.Book;
 import com.pratham.BookManagementSystem.entity.Transaction;
 import com.pratham.BookManagementSystem.entity.User;
 import com.pratham.BookManagementSystem.enums.Status;
+import com.pratham.BookManagementSystem.mapper.BookMapper;
+import com.pratham.BookManagementSystem.mapper.TransactionMapper;
+import com.pratham.BookManagementSystem.mapper.UserMapper;
 import com.pratham.BookManagementSystem.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -27,45 +34,48 @@ public class TransactionService {
 
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+    public List<TransactionDto> getAllTransactions() {
+        List<Transaction> transactions= transactionRepository.findAll();
+        return transactions.stream().map(TransactionMapper::toDto).collect(Collectors.toList());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public Transaction getTransactionById(long transactionId){
-        return transactionRepository.findById(transactionId).orElseThrow(()->new RuntimeException("Transaction not found with id: " + transactionId));
+    public TransactionDto getTransactionById(long transactionId){
+        Transaction transaction= transactionRepository.findById(transactionId).orElseThrow(()->new RuntimeException("Transaction not found with id: " + transactionId));
+        return TransactionMapper.toDto(transaction);
     }
 
-    public Transaction borrowBook(int userId, int bookId,
+    public TransactionDto borrowBook(int userId, int bookId,
                                   String remarks)  {
 
-        User user = userService.getUserById(userId);
-        if (user == null) {
+        UserDto userDto = userService.getUserById(userId);
+        if (userDto == null) {
             throw new RuntimeException("User not found with id: " + userId);
         }
 
-        Book book = bookService.getBookById(bookId);
+        BookDto bookDto = bookService.getBookById(bookId);
 
-        if (book == null) {
+
+        if (bookDto == null) {
             throw new RuntimeException("Book not found with id: " + bookId);
         }
 
         Transaction transaction = new Transaction();
 
-         if(book.getAvailableCopies() <= 0) {
-            throw new RuntimeException("Invalid number of available copies for the book: " + book.getBookName());
+         if(bookDto.getAvailableCopies() <= 0) {
+            throw new RuntimeException("Invalid number of available copies for the book: " + bookDto.getBookName());
         }
         transaction.setStatus(Status.BORROWED);
-        book.setAvailableCopies(book.getAvailableCopies() - 1);
-        bookService.updateBook(bookId,book);
+        bookDto.setAvailableCopies(bookDto.getAvailableCopies() - 1);
+        bookService.updateBook(bookId,bookDto);
 
 
         LocalDate borrowDate = LocalDate.now();
         LocalDate returnDate = borrowDate.plusDays(7);  // Assuming a 7-day borrowing period
         LocalTime borrowTime = LocalTime.now();
 
-        transaction.setUser(user);
-        transaction.setBook(book);
+        transaction.setUser(UserMapper.toEntity(userDto));
+        transaction.setBook(BookMapper.toEntity(bookDto));
         transaction.setBorrowDate(borrowDate);
         transaction.setBorrowTime(borrowTime);
         transaction.setReturnDate(returnDate);
@@ -74,18 +84,19 @@ public class TransactionService {
 
         transaction.setRemarks(remarks);
 
-        return transactionRepository.save(transaction);
+        Transaction savedTransaction =transactionRepository.save(transaction);
+        return TransactionMapper.toDto(savedTransaction);
     }
 
-    public Transaction returnBook(int userId ,int bookId , String remarks){
+    public TransactionDto returnBook(int userId ,int bookId , String remarks){
 
-        User user= userService.getUserById(userId);
-        if(user==null){
+        UserDto userDto= userService.getUserById(userId);
+        if(userDto==null){
             throw new RuntimeException("User not found with id: " + userId);
         }
 
-        Book book = bookService.getBookById(bookId);
-        if(book==null){
+        BookDto bookDto = bookService.getBookById(bookId);
+        if(bookDto==null){
             throw new RuntimeException("Book not found with id: " + bookId);
         }
 
@@ -110,10 +121,11 @@ public class TransactionService {
         borrowTransaction.setFineAmount(fine);
 
         // Update book stock
-        book.setAvailableCopies(book.getAvailableCopies() + 1);
-        bookService.updateBook(bookId, book);
+        bookDto.setAvailableCopies(bookDto.getAvailableCopies() + 1);
+        bookService.updateBook(bookId, bookDto);
 
-        return transactionRepository.save(borrowTransaction);
+        Transaction transaction= transactionRepository.save(borrowTransaction);
+        return TransactionMapper.toDto(transaction);
     }
 
 

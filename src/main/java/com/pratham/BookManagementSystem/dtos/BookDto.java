@@ -1,6 +1,5 @@
 package com.pratham.BookManagementSystem.dtos;
 
-import jakarta.persistence.Entity;
 import lombok.*;
 
 import java.time.LocalDate;

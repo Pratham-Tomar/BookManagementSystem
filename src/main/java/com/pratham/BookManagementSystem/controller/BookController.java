@@ -1,5 +1,6 @@
 package com.pratham.BookManagementSystem.controller;
 
+import com.pratham.BookManagementSystem.dtos.BookDto;
 import com.pratham.BookManagementSystem.entity.Book;
 import com.pratham.BookManagementSystem.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +18,23 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping("/getAllBooks")
-    public ResponseEntity<List<Book>> getAllBooks() {
+    public ResponseEntity<List<BookDto>> getAllBooks() {
         return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
     }
 
     @GetMapping("/getBookById/{bookId}")
-    public ResponseEntity<Book> getBookById(@PathVariable int bookId) {
+    public ResponseEntity<BookDto> getBookById(@PathVariable int bookId) {
         return new ResponseEntity<>(bookService.getBookById(bookId), HttpStatus.OK);
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<Book> addBook(@RequestBody Book book) {
-        return new ResponseEntity<>(bookService.addBook(book), HttpStatus.CREATED);
+    public ResponseEntity<BookDto> addBook(@RequestBody BookDto bookDto) {
+        return new ResponseEntity<>(bookService.addBook(bookDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/updateBook/{bookId}")
-    public ResponseEntity<Book> updateBook(@PathVariable int bookId,@RequestBody Book book) {
-        return new ResponseEntity<>(bookService.updateBook(bookId, book), HttpStatus.OK);
+    public ResponseEntity<BookDto> updateBook(@PathVariable int bookId,@RequestBody BookDto bookDto) {
+        return new ResponseEntity<>(bookService.updateBook(bookId, bookDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteBook/{bookId}")
@@ -43,12 +44,12 @@ public class BookController {
     }
 
     @GetMapping("/user/getAllBookDetails")
-    public ResponseEntity<List<Book>> getAllBookDetails() {
+    public ResponseEntity<List<BookDto>> getAllBookDetails() {
         return new ResponseEntity<>(bookService.getAllBookdetails(), HttpStatus.OK);
     }
 
     @GetMapping("/user/getBookById/{bookId}")
-    public ResponseEntity<Book> UserGetBookById(@PathVariable  int bookId) {
+    public ResponseEntity<BookDto> UserGetBookById(@PathVariable  int bookId) {
         return new ResponseEntity<>(bookService.UserGetBookById(bookId), HttpStatus.OK);
     }
 

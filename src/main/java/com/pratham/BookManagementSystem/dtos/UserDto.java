@@ -1,10 +1,6 @@
 package com.pratham.BookManagementSystem.dtos;
 
 import com.pratham.BookManagementSystem.enums.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
