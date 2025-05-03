@@ -54,6 +54,7 @@ public class UserService {
         userExists.setAddress(user.getAddress());
         userExists.setMobileNumber(user.getMobileNumber());
         userExists.setRegistrationNumber(user.getRegistrationNumber());
+        userExists.setEmail(user.getEmail());
         User savedUser= userRepository.save(userExists);
         return UserMapper.toDto(savedUser);
     }
@@ -94,6 +95,7 @@ public class UserService {
         userExists.setAddress(user.getAddress());
         userExists.setMobileNumber(user.getMobileNumber());
         userExists.setRegistrationNumber(user.getRegistrationNumber());
+        userExists.setEmail(user.getEmail());
         User savedUser= userRepository.save(userExists);
         return UserMapper.toDto(savedUser);
     }
