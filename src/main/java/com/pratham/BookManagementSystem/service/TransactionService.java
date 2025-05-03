@@ -1,5 +1,6 @@
 package com.pratham.BookManagementSystem.service;
 
+import com.pratham.BookManagementSystem.config.EmailService;
 import com.pratham.BookManagementSystem.dtos.BookDto;
 import com.pratham.BookManagementSystem.dtos.TransactionDto;
 import com.pratham.BookManagementSystem.dtos.UserDto;
@@ -31,6 +32,9 @@ public class TransactionService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailService emailService;
 
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -85,6 +89,45 @@ public class TransactionService {
         transaction.setRemarks(remarks);
 
         Transaction savedTransaction =transactionRepository.save(transaction);
+
+        // Format the email content
+        String emailContent = String.format(
+                "Dear %s,\n\n" +
+                        "You have successfully borrowed the book titled: *\"%s\"* from the NexusVerse Library.\n\n" +
+                        "📖 Book Details:\n" +
+                        "📚 Title: %s\n" +
+                        "✍️ Author: %s\n" +
+                        "🏢 Publisher: %s\n" +
+                        "📅 Publication Date: %s\n" +
+                        "🔢 ISBN: %s\n" +
+                        "📄 Pages: %d\n" +
+                        "🗣️ Language: %s\n" +
+                        "🎭 Genre: %s\n" +
+                        "💰 Price: ₹%.2f\n\n" +
+                        "📅 Borrow Date: %s\n" +
+                        "📚 Due Date: %s\n\n" +
+                        "Please make sure to return the book by the due date to avoid any late fees.\n\n" +
+                        "Happy Reading!\n" +
+                        "NexusVerse Team\n" +
+                        "📧 support@nexusverse.com",
+                userDto.getUsername(),
+                bookDto.getBookName(),
+                bookDto.getBookName(),
+                bookDto.getAuthorName(),
+                bookDto.getPublisherName(),
+                bookDto.getPublicationDate(),
+                bookDto.getIsbnNumber(),
+                bookDto.getNumberOfPages(),
+                bookDto.getLanguage(),
+                bookDto.getGenre(),
+                bookDto.getPrice(),
+                borrowDate,
+                returnDate
+        );
+
+        emailService.sendEmailAsync(userDto.getEmail(), "Book Borrowed", emailContent);
+
+
         return TransactionMapper.toDto(savedTransaction);
     }
 
@@ -125,6 +168,40 @@ public class TransactionService {
         bookService.updateBook(bookId, bookDto);
 
         Transaction transaction= transactionRepository.save(borrowTransaction);
+
+        String emailContent = String.format(
+                "Dear %s,\n\n" +
+                        "We are glad to inform you that the book titled: *\"%s\"* has been successfully returned to the NexusVerse Library.\n\n" +
+                        "📚 Book Details:\n" +
+                        "  - **Title**: %s\n" +
+                        "  - **Author**: %s\n" +
+                        "  - **Publisher**: %s\n" +
+                        "  - **Publication Date**: %s\n" +
+                        "  - **ISBN**: %s\n" +
+                        "  - **Pages**: %d\n" +
+                        "  - **Language**: %s\n" +
+                        "  - **Genre**: %s\n\n" +
+                        "We hope you enjoyed reading the book. Thank you for returning it on time. If you'd like to borrow more books, please visit our [NexusVerse Library](#).\n\n" +
+                        "Your feedback is important to us! Feel free to share your reading experience.\n\n" +
+                        "📧 For any queries, contact us at support@nexusverse.com\n\n" +
+                        "Best Regards,\n" +
+                        "The NexusVerse Library Team\n" +
+                        "www.nexusverse.com"
+                , userDto.getUsername(),
+                bookDto.getBookName(),
+                bookDto.getBookName(),
+                bookDto.getAuthorName(),
+                bookDto.getPublisherName(),
+                bookDto.getPublicationDate(),
+                bookDto.getIsbnNumber(),
+                bookDto.getNumberOfPages(),
+                bookDto.getLanguage(),
+                bookDto.getGenre(),
+                bookDto.getPrice()
+        );
+
+        emailService.sendEmailAsync(userDto.getEmail(), "Book Returned Successfully", emailContent);
+
         return TransactionMapper.toDto(transaction);
     }
 
