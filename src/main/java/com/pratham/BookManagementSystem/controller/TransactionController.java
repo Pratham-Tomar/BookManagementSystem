@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/Transaction")
+@RequestMapping("/transaction")
 public class TransactionController {
 
     @Autowired
     private TransactionService transactionService;
 
-    @GetMapping("/getAllTransaction")
+    @GetMapping("/getAllTransactions")
     public ResponseEntity<List<TransactionDto>> getAllTransaction() {
         return ResponseEntity.ok(transactionService.getAllTransactions());
     }
