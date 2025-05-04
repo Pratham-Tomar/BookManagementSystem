@@ -12,6 +12,7 @@ import com.pratham.BookManagementSystem.mapper.BookMapper;
 import com.pratham.BookManagementSystem.mapper.TransactionMapper;
 import com.pratham.BookManagementSystem.mapper.UserMapper;
 import com.pratham.BookManagementSystem.repository.TransactionRepository;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -36,16 +37,21 @@ public class TransactionService {
     @Autowired
     private EmailService emailService;
 
+    private static final org.slf4j.Logger log= LoggerFactory.getLogger(TransactionService.class);
+
 
     @PreAuthorize("hasRole('ADMIN')")
     public List<TransactionDto> getAllTransactions() {
+        log.info("Fetching all transactions");
         List<Transaction> transactions= transactionRepository.findAll();
         return transactions.stream().map(TransactionMapper::toDto).collect(Collectors.toList());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public TransactionDto getTransactionById(long transactionId){
+        log.info("Fetching transaction with ID: {}", transactionId);
         Transaction transaction= transactionRepository.findById(transactionId).orElseThrow(()->new RuntimeException("Transaction not found with id: " + transactionId));
+        log.debug("Fetched transaction details: {}", transaction);
         return TransactionMapper.toDto(transaction);
     }
 
@@ -54,6 +60,7 @@ public class TransactionService {
 
         UserDto userDto = userService.getUserById(userId);
         if (userDto == null) {
+            log.info("User not found with id: {}", userId);
             throw new RuntimeException("User not found with id: " + userId);
         }
 
@@ -61,12 +68,14 @@ public class TransactionService {
 
 
         if (bookDto == null) {
+            log.info("Book not found with id: {}", bookId);
             throw new RuntimeException("Book not found with id: " + bookId);
         }
 
         Transaction transaction = new Transaction();
 
          if(bookDto.getAvailableCopies() <= 0) {
+            log.info("No available copies for the book: {}", bookDto.getBookName());
             throw new RuntimeException("Invalid number of available copies for the book: " + bookDto.getBookName());
         }
         transaction.setStatus(Status.BORROWED);
@@ -124,7 +133,7 @@ public class TransactionService {
                 borrowDate,
                 returnDate
         );
-
+        log.info("Sending email to user: {}", userDto.getEmail());
         emailService.sendEmailAsync(userDto.getEmail(), "Book Borrowed", emailContent);
 
 
@@ -135,27 +144,37 @@ public class TransactionService {
 
         UserDto userDto= userService.getUserById(userId);
         if(userDto==null){
+            log.info("User not found with id: {}", userId);
             throw new RuntimeException("User not found with id: " + userId);
         }
 
         BookDto bookDto = bookService.getBookById(bookId);
         if(bookDto==null){
+            log.info("Book not found with id: {}", bookId);
             throw new RuntimeException("Book not found with id: " + bookId);
         }
 
         Transaction borrowTransaction = transactionRepository
                 .findByUserIdAndBook_BookIdAndStatus(userId, bookId, Status.BORROWED)
-                .orElseThrow(() -> new RuntimeException("No active borrowed transaction found for this user and book."));
+                .orElseThrow(() ->{
+                        log.info("No active borrowed transaction found for userId: {} and bookId: {}", userId, bookId);
+        return new RuntimeException("No active borrowed transaction found for this user and book.");
+        });
 
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
         double fine=0.0;
         if(today.isAfter(borrowTransaction.getReturnDate())){
+            log.info("Book is overdue. Calculating fine.");
             long overdueDays = borrowTransaction.getReturnDate().until(today).getDays(); // or ChronoUnit.DAYS.between(...)
+            log.info("Overdue days: {}", overdueDays);
             fine = overdueDays * 10.0;  // ₹10 per day
+            log.info("Total fine amount: ₹{}", fine);
             borrowTransaction.setRemarks(remarks + " | Fine: ₹" + fine);
+            log.info("Remarks updated with fine details: {}", borrowTransaction.getRemarks());
         }
         else{
+            log.info("Book returned on time.");
             borrowTransaction.setRemarks(remarks);
         }
         borrowTransaction.setStatus(Status.RETURNED);
@@ -199,17 +218,8 @@ public class TransactionService {
                 bookDto.getGenre(),
                 bookDto.getPrice()
         );
-
+        log.info("Sending email to user for returning Book: {}", userDto.getEmail());
         emailService.sendEmailAsync(userDto.getEmail(), "Book Returned Successfully", emailContent);
-
         return TransactionMapper.toDto(transaction);
     }
-
-
-
-
-
-
-
-
 }
