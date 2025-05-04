@@ -1,5 +1,8 @@
 package com.pratham.BookManagementSystem.controller;
 
+import com.pratham.BookManagementSystem.dtos.BookDto;
+import com.pratham.BookManagementSystem.dtos.UserDto;
+import com.pratham.BookManagementSystem.entity.Book;
 import com.pratham.BookManagementSystem.entity.User;
 import com.pratham.BookManagementSystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +20,23 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/admin/getAllUsers")
-    public ResponseEntity<List<User>> adminGetAllUsers(){
+    public ResponseEntity<List<UserDto>> adminGetAllUsers(){
         return new ResponseEntity<>(userService.AdmingetAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/admin/getUserById/{userId}")
-    public ResponseEntity<User> adminGetUserById(@PathVariable int userId){
+    public ResponseEntity<UserDto> adminGetUserById(@PathVariable int userId){
         return new ResponseEntity<>(userService.AdmingetUserById(userId), HttpStatus.OK);
     }
 
     @PostMapping("/admin/addUser")
-    public ResponseEntity<User> adminAddUser(@RequestBody User user){
-        return new ResponseEntity<>(userService.AdminAddUser(user), HttpStatus.CREATED);
+    public ResponseEntity<UserDto> adminAddUser(@RequestBody UserDto userDto){
+        return new ResponseEntity<>(userService.AdminAddUser(userDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/admin/updateUser/{userId}")
-    public ResponseEntity<User> adminUpdateUser(@PathVariable int userId,@RequestBody User user){
-        return new ResponseEntity<>(userService.AdminUpdateUserById(userId, user), HttpStatus.OK);
+    public ResponseEntity<UserDto> adminUpdateUser(@PathVariable int userId,@RequestBody UserDto userDto){
+        return new ResponseEntity<>(userService.AdminUpdateUserById(userId, userDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/admin/deleteUserById/{userId}")
@@ -51,22 +54,27 @@ public class UserController {
     // from here User can register himself , get his details by name and Id &  update his details
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user){
-        return new ResponseEntity<>(userService.registerUser(user), HttpStatus.CREATED);
+    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto){
+        return new ResponseEntity<>(userService.registerUser(userDto), HttpStatus.CREATED);
     }
     @GetMapping("/getUserByName")
-    public ResponseEntity<User> getUserByName(@RequestParam String userName){
+    public ResponseEntity<UserDto> getUserByName(@RequestParam String userName){
         return new ResponseEntity<>(userService.getUserByName(userName), HttpStatus.OK);
     }
 
     @GetMapping("/getUserById/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable  int userId){
+    public ResponseEntity<UserDto> getUserById(@PathVariable  int userId){
         return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }
 
     @PutMapping("/updateUser/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable int userId,@RequestBody User user){
-        return new ResponseEntity<>(userService.updateUserById(userId, user), HttpStatus.OK);
+    public ResponseEntity<UserDto> updateUser(@PathVariable int userId,@RequestBody UserDto userDto){
+        return new ResponseEntity<>(userService.updateUserById(userId, userDto), HttpStatus.OK);
+    }
+
+    @GetMapping("/getallbooks")
+    public ResponseEntity<List<BookDto>> getAllBooks(){
+        return new ResponseEntity<>(userService.getAllBooks(), HttpStatus.OK);
     }
 
 

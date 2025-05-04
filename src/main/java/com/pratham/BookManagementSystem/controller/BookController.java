@@ -1,5 +1,6 @@
 package com.pratham.BookManagementSystem.controller;
 
+import com.pratham.BookManagementSystem.dtos.BookDto;
 import com.pratham.BookManagementSystem.entity.Book;
 import com.pratham.BookManagementSystem.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,42 +11,45 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/Book")
+@RequestMapping("/book")
 public class BookController {
 
     @Autowired
     private BookService bookService;
 
     @GetMapping("/getAllBooks")
-    public ResponseEntity<List<Book>> getAllBooks(){
+    public ResponseEntity<List<BookDto>> getAllBooks() {
         return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
     }
 
-    @GetMapping("/getBookById")
-    public ResponseEntity<Book> getBookById(int bookId){
+    @GetMapping("/getBookById/{bookId}")
+    public ResponseEntity<BookDto> getBookById(@PathVariable int bookId) {
         return new ResponseEntity<>(bookService.getBookById(bookId), HttpStatus.OK);
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<Book> addBook(@RequestBody Book book){
-        return new ResponseEntity<>(bookService.addBook(book), HttpStatus.CREATED);
+    public ResponseEntity<BookDto> addBook(@RequestBody BookDto bookDto) {
+        return new ResponseEntity<>(bookService.addBook(bookDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/updaetBook")
-    public ResponseEntity<Book> updateBook(int bookId, Book book){
-        return new ResponseEntity<>(bookService.updateBook(bookId, book), HttpStatus.OK);
+    @PutMapping("/updateBook/{bookId}")
+    public ResponseEntity<BookDto> updateBook(@PathVariable int bookId,@RequestBody BookDto bookDto) {
+        return new ResponseEntity<>(bookService.updateBook(bookId, bookDto), HttpStatus.OK);
     }
-    @DeleteMapping("/deleteBook")
-    public ResponseEntity<String> deleteBook(int bookId){
+
+    @DeleteMapping("/deleteBook/{bookId}")
+    public ResponseEntity<String> deleteBook(@PathVariable int bookId) {
         bookService.deleteBook(bookId);
         return new ResponseEntity<>("Book Deleted Successfully", HttpStatus.OK);
     }
 
-    public ResponseEntity<List<Book>> getAllBookdetails(){
+    @GetMapping("/user/getAllBookDetails")
+    public ResponseEntity<List<BookDto>> getAllBookDetails() {
         return new ResponseEntity<>(bookService.getAllBookdetails(), HttpStatus.OK);
     }
 
-    public ResponseEntity<Book> UserGetBookById(int bookId){
+    @GetMapping("/user/getBookById/{bookId}")
+    public ResponseEntity<BookDto> UserGetBookById(@PathVariable  int bookId) {
         return new ResponseEntity<>(bookService.UserGetBookById(bookId), HttpStatus.OK);
     }
 

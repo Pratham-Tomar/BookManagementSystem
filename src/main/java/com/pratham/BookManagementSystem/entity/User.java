@@ -28,6 +28,7 @@ public class User implements UserDetails {
     private String mobileNumber;
     private String Address;
     private String registrationNumber;
+    private String email;
 
 
 
@@ -43,13 +44,14 @@ public class User implements UserDetails {
 
     public User(){}
 
-    public User(int id, String username, String password, String address, String mobileNumber, String registrationNumber, Role role) {
+    public User(int id, String username, String password, String address, String mobileNumber, String registrationNumber,String email, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;
         Address = address;
         this.mobileNumber = mobileNumber;
         this.registrationNumber = registrationNumber;
+        this.email=email;
         this.role = role;
     }
 
@@ -92,6 +94,10 @@ public class User implements UserDetails {
     public void setRegistrationNumber(String registrationNumber) {
         this.registrationNumber = registrationNumber;
     }
+
+    public void setEmail(String email) {this.email = email;}
+
+    public String getEmail() {return email;}
 
     public Role getRole() {
         return role;
